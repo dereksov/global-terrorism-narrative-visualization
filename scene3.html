@@ -7,6 +7,8 @@
 <!-- Create a div where the graph will take place -->
 <div id="my_dataviz"></div>
 
+<html>
+</body>
 <p>
   <label># bins</label>
   <input type="number" min="0" max="100" step="10" value="20" id="nBin">
@@ -29,6 +31,20 @@
     .append("g")
       .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
+
+  svg.append("text")
+      .attr("class", "x label")
+      .attr("text-anchor", "end")
+      .attr("x", width)
+      .attr("y", height - 6)
+      .text("Property Damage in $");
+  svg.append("text")
+      .attr("class", "y label")
+      .attr("text-anchor", "end")
+      .attr("y", 6)
+      .attr("dy", ".75em")
+      .attr("transform", "rotate(-90)")
+      .text("Count");
 
   // get the data
   d3.csv("https://raw.githubusercontent.com/dereksov/global-terrorism-narrative-visualization/main/hist.csv", function(data) {
@@ -102,5 +118,9 @@
   });
   </script>
 
+  <p><font size=5pt>some stuff.</font></p>
+
   <a href="https://dereksov.github.io/global-terrorism-narrative-visualization/scene2.html">Previous</a>
   <a href="https://dereksov.github.io/global-terrorism-narrative-visualization/scene4.html">Next</a>
+</body>
+</html>
