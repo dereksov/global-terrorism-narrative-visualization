@@ -25,10 +25,6 @@ var svg = d3.select("#my_dataviz")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
 
-d3.csv("https://github.com/dereksov/global-terrorism-narrative-visualization/blob/main/globalterrorismdb.csv",
-    function(d){
-    return { date : d3.timeParse("%Y")(d.iyear), value : d.value }
-  },
 //Read the data
 d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv",
 
