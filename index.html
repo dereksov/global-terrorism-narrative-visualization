@@ -26,11 +26,11 @@ var svg = d3.select("#my_dataviz")
           "translate(" + margin.left + "," + margin.top + ")");
 
 //Read the data
-d3.csv("https://raw.githubusercontent.com/dereksov/global-terrorism-narrative-visualization/main/dailyattacks.csv",
+d3.csv("https://raw.githubusercontent.com/dereksov/global-terrorism-narrative-visualization/main/monthlyattacks.csv",
 
   // When reading the csv, I must format variables:
   function(d){
-    return { date : d3.timeParse("%m-%d-%Y")(d.date), value: d.value}
+    return { date : d3.timeParse("%m-%Y")(d.date), value: d.value}
   },
 
   // Now I can use this dataset:
