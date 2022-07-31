@@ -30,7 +30,7 @@
 
     // Add X axis
     var x = d3.scaleLinear()
-      .domain([0, 5000])
+      .domain([0, 50])
       .range([ 0, width ]);
     svg.append("g")
       .attr("transform", "translate(0," + height + ")")
@@ -38,7 +38,7 @@
 
     // Add Y axis
     var y = d3.scaleLinear()
-      .domain([0, 2100])
+      .domain([0, 50])
       .range([height, 0]);
     svg.append("g")
       .call(d3.axisLeft(y));
@@ -66,8 +66,8 @@
 
     var mousemove = function(d) {
       tooltip
-        .html("The number of occurences with " + d.nperps + " terrorists and "
-               + d.nkill + " victim deaths are "+ d.value)
+        .html("There were " + d.value + " attacks with " + d.nperps + " terrorists and "
+               + d.nkill + " victim deaths.")
         .style("left", (d3.mouse(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
         .style("top", (d3.mouse(this)[1]) + "px")
     }
@@ -99,3 +99,7 @@
   })
 
   </script>
+
+  <a href="https://dereksov.github.io/global-terrorism-narrative-visualization/scene1.html">Previous</a>
+  
+    <a href="https://dereksov.github.io/global-terrorism-narrative-visualization/scene3.html">Next</a>
