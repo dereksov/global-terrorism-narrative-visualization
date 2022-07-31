@@ -66,8 +66,8 @@
 
     var mousemove = function(d) {
       tooltip
-        .html("There were " + d.value + " attacks with " + d.nperps + " terrorists and "
-               + d.nkill + " victim deaths.")
+        .html("There were " + d.value + " attacks with " + d.nperps + " terrorist(s) and "
+               + d.nkill + " victim death(s).")
         .style("left", (d3.mouse(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
         .style("top", (d3.mouse(this)[1]) + "px")
     }
@@ -90,7 +90,7 @@
         .attr("cy", function (d) { return y(d.nkill); } )
         .attr("r", 7)
         .style("fill", "#69b3a2")
-        .style("opacity", 0.3)
+        .style("opacity", function(d) { return d.value/200; } )
         .style("stroke", "white")
       .on("mouseover", mouseover )
       .on("mousemove", mousemove )
@@ -101,5 +101,4 @@
   </script>
 
   <a href="https://dereksov.github.io/global-terrorism-narrative-visualization/scene1.html">Previous</a>
-  
-    <a href="https://dereksov.github.io/global-terrorism-narrative-visualization/scene3.html">Next</a>
+  <a href="https://dereksov.github.io/global-terrorism-narrative-visualization/scene3.html">Next</a>
