@@ -30,7 +30,7 @@ d3.csv("https://raw.githubusercontent.com/dereksov/global-terrorism-narrative-vi
 
   // When reading the csv, I must format variables:
   function(d){
-    return { date : d3.timeParse("%m-%Y")(d.date), value: d.value}
+    return { date : d3.timeParse("%d-%m-%Y")(d.date), value: d.value}
   },
 
   // Now I can use this dataset:
