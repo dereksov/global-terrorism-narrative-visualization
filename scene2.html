@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 
-<!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
 
-<!-- Create a div where the graph will take place -->
 <div id="my_dataviz"></div>
 
-<h1>Living in Fear<h1>
+<h1>Threat of the Few<h1>
 
   <script>
 
-  // set the dimensions and margins of the graph
+  // margin
   var margin = {top: 10, right: 30, bottom: 30, left: 60},
       width = 800 - margin.left - margin.right,
       height = 600 - margin.top - margin.bottom;
 
-  // append the svg object to the body of the page
+  // append to top
   var svg = d3.select("#my_dataviz")
     .append("svg")
       .attr("width", width + margin.left + margin.right)
@@ -25,6 +23,7 @@
       .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
+  //axis labels
   svg.append("text")
       .attr("class", "x label")
       .attr("text-anchor", "end")
@@ -39,10 +38,9 @@
       .attr("transform", "rotate(-90)")
       .text("Number of Victim Deaths");
 
-  //Read the data
   d3.csv("https://raw.githubusercontent.com/dereksov/global-terrorism-narrative-visualization/main/scatter.csv", function(data) {
 
-    // Add X axis
+    // number of terrorists involved in attack
     var x = d3.scaleLinear()
       .domain([0, 50])
       .range([ 0, width ]);
@@ -50,15 +48,14 @@
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x));
 
-    // Add Y axis
+    // number of victim deaths
     var y = d3.scaleLinear()
       .domain([0, 50])
       .range([height, 0]);
     svg.append("g")
       .call(d3.axisLeft(y));
 
-    // Add a tooltip div. Here I define the general feature of the tooltip: stuff that do not depend on the data point.
-    // Its opacity is set to 0: we don't see it by default.
+      // select vis
     var tooltip = d3.select("#my_dataviz")
       .append("div")
       .style("opacity", 0)
@@ -69,15 +66,13 @@
       .style("border-radius", "5px")
       .style("padding", "10px")
 
-
-
-    // A function that change this tooltip when the user hover a point.
-    // Its opacity is set to 1: we can now see it. Plus it set the text and position of tooltip depending on the datapoint (d)
+      // hover details
     var mouseover = function(d) {
       tooltip
         .style("opacity", 1)
     }
 
+    // text detail
     var mousemove = function(d) {
       tooltip
         .html("There were " + d.value + " attacks with " + d.nperps + " terrorist(s) and "
@@ -86,7 +81,7 @@
         .style("top", (d3.mouse(this)[1]) + "px")
     }
 
-    // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
+    // remove hover detail
     var mouseleave = function(d) {
       tooltip
         .transition()
@@ -94,7 +89,7 @@
         .style("opacity", 0)
     }
 
-    // Add dots
+    // scatter
     svg.append('g')
       .selectAll("dot")
       .data(data.filter(function(d,i){return i<50})) // the .filter part is just to keep a few dots on the chart, not all of them
@@ -103,7 +98,7 @@
         .attr("cx", function (d) { return x(d.nperps); } )
         .attr("cy", function (d) { return y(d.nkill); } )
         .attr("r", 7)
-        .style("fill", "#69b3a2")
+        .style("fill", "black")
         .style("opacity", function(d) { return d.value/200; } )
         .style("stroke", "white")
       .on("mouseover", mouseover )
@@ -113,6 +108,13 @@
   })
 
   </script>
+
+  <h3>Hover over individual dots to see further detail.</h3>
+
+  <p> Terror attacks that people see in first world countries are often major events perpetrated by infamous groups.
+    These attacks, to people with priveledge, are rare tragedie. In truth, most attacks are small in scale and affect fewer victims.
+    The culture of terrorism is not the fear of an occasional assault, but the constant guerrilla warfare slowly chipping at
+    the people's security and sanity.</p>
 
   <a href="https://dereksov.github.io/global-terrorism-narrative-visualization/scene1.html">Previous</a>
   <a href="https://dereksov.github.io/global-terrorism-narrative-visualization/scene3.html">Next</a>

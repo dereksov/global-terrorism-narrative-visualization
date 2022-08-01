@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 
-<!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
 
-<!-- Create a div where the graph will take place -->
 <div id="my_dataviz"></div>
 
 <h1>Escalation in Terrorism<h1>
 
   <script>
 
-  // set the dimensions and margins of the graph
+//margin
   var margin = {top: 10, right: 30, bottom: 30, left: 60},
       width = 800 - margin.left - margin.right,
       height = 600 - margin.top - margin.bottom;
 
-  // append the svg object to the body of the page
+//select
   var svg = d3.select("#my_dataviz")
     .append("svg")
       .attr("width", width + margin.left + margin.right)
@@ -25,6 +23,7 @@
       .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
+//axis label
   svg.append("text")
       .attr("class", "x label")
       .attr("text-anchor", "end")
@@ -39,45 +38,109 @@
       .attr("transform", "rotate(-90)")
       .text("Number of Attacks");
 
-  //Read the data
   d3.csv("https://raw.githubusercontent.com/dereksov/global-terrorism-narrative-visualization/main/monthlyattacks.csv",
 
-    // When reading the csv, I must format variables:
-    function(d){
-      return { date : d3.timeParse("%Y-%m-%d")(d.date), value : d.value }
-    },
+//parse
+function(d){
+  return { date : d3.timeParse("%Y-%m-%d")(d.date), value : d.value }
+},
 
-    // Now I can use this dataset:
-    function(data) {
+//date
+function(data) {
+  var x = d3.scaleTime()
+    .domain(d3.extent(data, function(d) { return d.date; }))
+    .range([ 0, width ]);
+  xAxis = svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x));
 
-      // Add X axis --> it is a date format
-      var x = d3.scaleTime()
-        .domain(d3.extent(data, function(d) { return d.date; }))
-        .range([ 0, width ]);
-      svg.append("g")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x));
+// count
+  var y = d3.scaleLinear()
+    .domain([0, d3.max(data, function(d) { return +d.value; })])
+    .range([ height, 0 ]);
+  yAxis = svg.append("g")
+    .call(d3.axisLeft(y));
 
-      // Add Y axis
-      var y = d3.scaleLinear()
-        .domain([0, d3.max(data, function(d) { return +d.value; })])
-        .range([ height, 0 ]);
-      svg.append("g")
-        .call(d3.axisLeft(y));
+// clip function for brush
+  var clip = svg.append("defs").append("svg:clipPath")
+      .attr("id", "clip")
+      .append("svg:rect")
+      .attr("width", width )
+      .attr("height", height )
+      .attr("x", 0)
+      .attr("y", 0);
 
-      // Add the line
-      svg.append("path")
-        .datum(data)
-        .attr("fill", "none")
-        .attr("stroke", "steelblue")
-        .attr("stroke-width", 1.5)
+// brush function
+  var brush = d3.brushX()
+      .extent( [ [0,0], [width,height] ] )
+      .on("end", updateChart)
+
+// draw line
+  var line = svg.append('g')
+    .attr("clip-path", "url(#clip)")
+
+  line.append("path")
+    .datum(data)
+    .attr("class", "line")
+    .attr("fill", "none")
+    .attr("stroke", "red")
+    .attr("stroke-width", 1.5)
+    .attr("d", d3.line()
+      .x(function(d) { return x(d.date) })
+      .y(function(d) { return y(d.value) })
+      )
+
+// implement brush
+  line
+    .append("g")
+      .attr("class", "brush")
+      .call(brush);
+
+// prevent timeout
+  var idleTimeout
+  function idled() { idleTimeout = null; }
+
+  // update boundary
+  function updateChart() {
+    extent = d3.event.selection
+    if(!extent){
+      if (!idleTimeout) return idleTimeout = setTimeout(idled, 300);
+      x.domain([ 4,8])
+    }else{
+      x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
+      line.select(".brush").call(brush.move, null)
+    }
+
+    xAxis.transition().duration(1000).call(d3.axisBottom(x))
+    line
+        .select('.line')
+        .transition()
+        .duration(1000)
         .attr("d", d3.line()
           .x(function(d) { return x(d.date) })
           .y(function(d) { return y(d.value) })
-          )
+        )
+  }
 
-  })
+  //doubleclick reset
+  svg.on("dblclick",function(){
+    x.domain(d3.extent(data, function(d) { return d.date; }))
+    xAxis.transition().call(d3.axisBottom(x))
+    line
+      .select('.line')
+      .transition()
+      .attr("d", d3.line()
+        .x(function(d) { return x(d.date) })
+        .y(function(d) { return y(d.value) })
+    )
+  });
+})
 
-  </script>
+</script>
+
+<h3>Click and drag to zoom. Doubleclick to reset graph.</h3>
+
+<p>Over the past two decades, terrorist attacks across the globe have increased dramatically.
+Living in fear is the new normal for many, though the incidents they suffer from do not match what we might imagine.</p>
 
 <a href="https://dereksov.github.io/global-terrorism-narrative-visualization/scene2.html">Next</a>

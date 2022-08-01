@@ -1,29 +1,27 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 
-<!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
 
-<!-- Create a div where the graph will take place -->
 <div id="my_dataviz"></div>
 
 <html>
 </body>
 <p>
   <label># bins</label>
-  <input type="number" min="0" max="100" step="10" value="20" id="nBin">
+  <input type="number" min="0" max="200" step="20" value="20" id="nBin">
 </p>
 
 <h1>The Monetary Cost<h1>
 
   <script>
 
-  // set the dimensions and margins of the graph
+  // margins
   var margin = {top: 10, right: 30, bottom: 30, left: 40},
       width = 800 - margin.left - margin.right,
       height = 600 - margin.top - margin.bottom;
 
-  // append the svg object to the body of the page
+  // append to top
   var svg = d3.select("#my_dataviz")
     .append("svg")
       .attr("width", width + margin.left + margin.right)
@@ -32,6 +30,7 @@
       .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
+  // axis labels
   svg.append("text")
       .attr("class", "x label")
       .attr("text-anchor", "end")
@@ -46,71 +45,65 @@
       .attr("transform", "rotate(-90)")
       .text("Count");
 
-  // get the data
   d3.csv("https://raw.githubusercontent.com/dereksov/global-terrorism-narrative-visualization/main/hist.csv", function(data) {
 
-    // X axis: scale and draw:
+    // money
     var x = d3.scaleLinear()
-        .domain([0, 1000000])     // can use this instead of 1000 to have the max of data: d3.max(data, function(d) { return +d.propvalue })
+        .domain([0, 1000000]) // data capped at 1mil
         .range([0, width]);
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x));
 
-    // Y axis: initialization
+    // count of attacks
     var y = d3.scaleLinear()
         .range([height, 0]);
     var yAxis = svg.append("g")
 
-    // A function that builds the graph for a specific value of bin
+    // interactive
     function update(nBin) {
 
-      // set the parameters for the histogram
+      // set params
       var histogram = d3.histogram()
-          .value(function(d) { return d.propvalue; })   // I need to give the vector of value
-          .domain(x.domain())  // then the domain of the graphic
-          .thresholds(x.ticks(nBin)); // then the numbers of bins
+          .value(function(d) { return d.propvalue; })
+          .domain(x.domain())
+          .thresholds(x.ticks(nBin));
 
-      // And apply this function to data to get the bins
       var bins = histogram(data);
 
-      // Y axis: update now that we know the domain
-      y.domain([0, d3.max(bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
+      // y ocunt histogram
+      y.domain([0, d3.max(bins, function(d) { return d.length; })]);
       yAxis
           .transition()
           .duration(1000)
           .call(d3.axisLeft(y));
 
-      // Join the rect with the bins data
       var u = svg.selectAll("rect")
           .data(bins)
 
-      // Manage the existing bars and eventually the new ones:
+      // bar management
       u
           .enter()
-          .append("rect") // Add a new rect for each new elements
-          .merge(u) // get the already existing elements as well
-          .transition() // and apply changes to all of them
+          .append("rect")
+          .merge(u)
+          .transition()
           .duration(1000)
             .attr("x", 1)
             .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
             .attr("width", function(d) { return x(d.x1) - x(d.x0) -1 ; })
             .attr("height", function(d) { return height - y(d.length); })
-            .style("fill", "#69b3a2")
+            .style("fill", "#99cc66")
 
-
-      // If less bar in the new histogram, I delete the ones not in use anymore
+      // clear old
       u
           .exit()
           .remove()
       }
 
-
-    // Initialize with 20 bins
+    // Init with 20
     update(20)
 
-
-    // Listen to the button -> update if user change it
+    // listener
     d3.select("#nBin").on("input", function() {
       update(+this.value);
     });
@@ -118,7 +111,10 @@
   });
   </script>
 
-  <p><font size=5pt>some stuff.</font></p>
+  <h3>Adjust the bins with the dropdown box.</h3>
+
+  <p>While certain tragedies cause damage in the millions, if not billions, the average impact of an attack
+    is on a far smaller scale.</p>
 
   <a href="https://dereksov.github.io/global-terrorism-narrative-visualization/scene2.html">Previous</a>
   <a href="https://dereksov.github.io/global-terrorism-narrative-visualization/scene4.html">Next</a>

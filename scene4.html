@@ -1,25 +1,18 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 
-<!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
 
-<!-- Color scale -->
-<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-
-<!-- Add 2 buttons -->
 <button onclick="update(data1)">Intention</button>
 <button onclick="update(data2)">Target Type</button>
 <button onclick="update(data3)">Country</button>
 
-<!-- Create a div where the graph will take place -->
 <div id="my_dataviz"></div>
 
 <h1>The Victims<h1>
 
   <script>
 
-  // create 2 data_set
   var data1 = [{group: 'Bombing/Explosion', value: 58819},
  {group: 'Armed Assault', value: 25236},
  {group: 'Kidnapping', value: 9747},
@@ -30,7 +23,7 @@
  {group: 'Barricade', value: 485},
  {group: 'Hijacking', value: 380}];
 
-  var data2 = [{group: 'Private Citizens', value: 37538},
+  var data2 = [{group: 'Priv. Citizen/Property', value: 37538},
  {group: 'Police', value: 20208},
  {group: 'Government', value: 14174},
  {group: 'Business', value: 10018},
@@ -79,12 +72,12 @@
  {group: 'Ukraine', value: 893},
  {group: 'Sri Lanka', value: 744}];
 
-  // set the dimensions and margins of the graph
+  // margins
   var margin = {top: 30, right: 30, bottom: 100, left: 60},
       width = 800 - margin.left - margin.right,
       height = 600 - margin.top - margin.bottom;
 
-  // append the svg object to the body of the page
+  // append
   var svg = d3.select("#my_dataviz")
     .append("svg")
       .attr("width", width + margin.left + margin.right)
@@ -93,59 +86,67 @@
       .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
-  // Initialize the X axis
+  // x categorical
   var x = d3.scaleBand()
     .range([ 0, width ])
     .padding(0.2);
   var xAxis = svg.append("g")
     .attr("transform", "translate(0," + height + ")")
 
-
-  // Initialize the Y axis
+  // y axis count
   var y = d3.scaleLinear()
     .range([ height, 0]);
   var yAxis = svg.append("g")
     .attr("class", "myYaxis")
 
 
-  // A function that create / update the plot for a given variable:
+  // update bar chart
   function update(data) {
 
-    // Update the X axis
+    // Update x
     x.domain(data.map(function(d) { return d.group; }))
     xAxis.call(d3.axisBottom(x)).selectAll("text")
     .style("text-anchor", "end").attr("dx", "-.8em")
     .attr("dy", ".15em").attr("transform", "rotate(-65)");
 
-    // Update the Y axis
+    // Update y
     y.domain([0, d3.max(data, function(d) { return d.value }) ]);
     yAxis.transition().duration(1000).call(d3.axisLeft(y));
 
-    // Create the u variable
+    // u var to change
     var u = svg.selectAll("rect")
       .data(data)
 
     u
       .enter()
-      .append("rect") // Add a new rect for each new elements
-      .merge(u) // get the already existing elements as well
-      .transition() // and apply changes to all of them
+      .append("rect")
+      .merge(u)
+      .transition()
       .duration(1000)
         .attr("x", function(d) { return x(d.group); })
         .attr("y", function(d) { return y(d.value); })
         .attr("width", x.bandwidth())
         .attr("height", function(d) { return height - y(d.value); })
-        .attr("fill", "#69b3a2")
+        .attr("fill", "#EED202")
 
-    // If less group in the new dataset, I delete the ones not in use anymore
+    // delete
     u
       .exit()
       .remove()
   }
 
-  // Initialize the plot with the first dataset
+  // init with first dataset
   update(data1)
 
   </script>
+
+  <h3>Select what data to see from the buttons.</h3>
+
+  <p>The most common type of attacks hurt the most vulnerable people.
+    The majority of attacks now hurt people at larger scales than before with explosives and firearms.
+    The average citizen is far more likely a target than a person that can defend themselves.
+    Finally, the most terrorized countries are the countries closest to strife and conflict.
+    Those who suffer most from terrorism are not living in first world countries, but those who share
+    a country with such terrible radicals.</p>
 
   <a href="https://dereksov.github.io/global-terrorism-narrative-visualization/scene3.html">Previous</a>
